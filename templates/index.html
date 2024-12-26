@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Twitter Trends</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Top 5 Twitter Trends</h1>
+    <button onclick="fetchTrends()">Click here to run the script</button>
+    <div id="results"></div>
+    <script>
+        async function fetchTrends() {
+            // Capture the start time
+            const startTime = new Date();
+            
+            // Fetch data from the backend
+            const response = await fetch('/fetch-trends');
+            const data = await response.json();
+
+            // Capture the end time
+            const endTime = new Date();
+
+            // Format times as string
+            const startTimeFormatted = startTime.toLocaleString();
+            const endTimeFormatted = endTime.toLocaleString();
+
+            // Get current date and time
+            const now = new Date();
+            const dateTime = now.toLocaleString();
+
+            // Prepare trends data
+            const trendsHtml = data.trends.map(trend => `<li>${trend}</li>`).join('');
+
+            // Display results
+            document.getElementById('results').innerHTML = `
+                <p>These are the most happening topics as on ${dateTime}:</p>
+                <ul>${trendsHtml}</ul>
+                <p>The IP address used for this query was ${data.ip_address}.</p>
+                <p>Start time: ${startTimeFormatted}</p>
+                <p>End time: ${endTimeFormatted}</p>
+                <p>Here’s a JSON extract of this record from the MongoDB:</p>
+                <pre>${JSON.stringify(data.record, null, 2)}</pre>
+                <button onclick="fetchTrends()">Click here to run the query again</button>
+            `;
+        }
+    </script>
+</body>
+</html>
